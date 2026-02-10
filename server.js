@@ -11,7 +11,7 @@
 
 
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
 
 
@@ -39,16 +39,26 @@
     const hcf = (arr) =>
     arr.reduce((a, b) => gcd(a, b));
 
-    const askAI = async (question) => {
+  const askAI = async (question) => {
     try {
         const result = await model.generateContent(question);
         const text = result.response.text().trim();
+
+        
+        let match = text.match(/\*\*(.*?)\*\*/);
+        if (match) return match[1]; 
+
+     
+        match = text.match(/is\s+([A-Za-z]+)/i);
+        if (match) return match[1];
+
         return text.split(" ")[0];
     } catch (e) {
         console.error("AI Error:", e);
         return "Error";
     }
-    };
+};
+
 
 
     app.post("/bfhl", async (req, res) => {
